@@ -3,16 +3,30 @@
   "version": "0.0.1",
   "description": "Container for various resistbot discordbot dependencies",
   "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsc && dotenv -e .env node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky"
   },
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/morgan": "^1.9.9",
+    "discord-api-types": "^0.37.119",
+    "dotenv-cli": "^8.0.0",
     "husky": "^9.0.11",
-    "lint-staged": "^15.2.2"
+    "lint-staged": "^15.2.2",
+    "prettier": "^3.5.1"
   },
   "lint-staged": {
-    "**/*": "cd resistbot-node-backend && prettier --write --ignore-unknown"
+    "**/*": "prettier --write --ignore-unknown"
+  },
+  "dependencies": {
+    "discord.js": "^14.18.0",
+    "express": "^4.21.2",
+    "morgan": "^1.10.0",
+    "typescript": "^5.7.3"
   }
 }

@@ -1,7 +1,7 @@
 services:
   node-backend:
     build:
-      context: ./resistbot-node-backend
+      context: ./
     ports:
       - "${BACKEND_PORT}:${BACKEND_PORT}"
     environment:
@@ -10,12 +10,4 @@ services:
       RP_NETLOC: ${RP_NETLOC}
       RP_BASEPATH: ${RP_BASEPATH}
       RP_SCHEME: ${RP_SCHEME}
-      BACKEND_PORT: ${BACKEND_PORT}
-  gateway-forwarder:
-    build:
-      context: ./resistbot-gateway-forwarder
-    command: "npm start"
-    environment:
-      DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN}
-      BACKEND_URL: http://node-backend
       BACKEND_PORT: ${BACKEND_PORT}
