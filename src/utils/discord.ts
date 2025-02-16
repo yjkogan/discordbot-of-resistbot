@@ -1,5 +1,12 @@
 import { ButtonStyle, ComponentType } from "discord.js";
 
+export function createActionRowWithComponents(components: any[]) {
+  return {
+    type: ComponentType.ActionRow,
+    components,
+  };
+}
+
 export function createEmbed(url: string) {
   return { url: url, title: url };
 }

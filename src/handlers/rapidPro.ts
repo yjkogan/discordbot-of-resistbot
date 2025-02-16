@@ -1,7 +1,12 @@
 import { RapidProJson, getUrl } from "../utils/rapidPro";
-import { createEmbed, createButtonComponent } from "../utils/discord";
+import {
+  createEmbed,
+  createButtonComponent,
+  createActionRowWithComponents,
+} from "../utils/discord";
 import { getDiscordEnvars } from "../env";
 import { getInstance } from "../logger";
+import { ComponentType } from "discord.js";
 const logger = getInstance();
 
 export async function handleRapidProResponse(requestJson: RapidProJson) {
@@ -15,22 +20,24 @@ export async function handleRapidProResponse(requestJson: RapidProJson) {
   }
 
   // TODO: Refactor this stuff into a discord module, or use discord.js
+  const quickReplies = requestJson.quick_replies ?? [];
   const messageJson = {
     content: requestJson.text,
     embeds: (requestJson.attachments ?? []).map((a) => createEmbed(a)),
-    components: [
-      {
-        type: 1,
-        components: (requestJson.quick_replies ?? []).map((qr) =>
-          createButtonComponent(qr),
-        ),
-      },
-    ],
+    components:
+      quickReplies.length > 0
+        ? [
+            createActionRowWithComponents(
+              quickReplies.map((qr) => createButtonComponent(qr)),
+            ),
+          ]
+        : [],
   };
 
   try {
     const { discordBotToken } = getDiscordEnvars();
     const url = `https://discord.com/api/channels/${channelId}/messages`;
+    console.log(messageJson);
     const discordResponse = await fetch(url, {
       method: "POST",
       body: JSON.stringify(messageJson),
