@@ -1,10 +1,9 @@
 import express from "express";
-import {
-  handleIncomingDM,
-  handleQuickResponse,
-  handleRapidProResponse,
-} from "./dmHandlers";
 import logger from "morgan";
+
+import { startWsClient } from "./wsClient";
+import { handleRapidProResponse } from "./handlers/rapidPro";
+import { getDiscordEnvars } from "./env";
 
 var app = express();
 const port = process.env.BACKEND_PORT || 5555;
@@ -14,6 +13,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 /* GET home page. */
+app.get("/", function (req: express.Request, res: express.Response) {
+  res.send('<a href="https://resist.bot/">https://resist.bot/</a>');
+});
+
 app.get("/healthcheck", function (req: express.Request, res: express.Response) {
   const healthcheck = {
     uptime: process.uptime(),
@@ -27,21 +30,13 @@ app.get("/healthcheck", function (req: express.Request, res: express.Response) {
   }
 });
 
-app.post(
-  "/incoming-dm",
-  function (req: express.Request, res: express.Response) {
-    handleIncomingDM(req.body);
-    res.send(202);
-  },
-);
+const { discordBotToken } = getDiscordEnvars();
 
-app.post(
-  "/incoming-interaction",
-  function (req: express.Request, res: express.Response) {
-    handleQuickResponse(req.body);
-    res.send(202);
-  },
-);
+if (!discordBotToken) {
+  throw new Error("DISCORD_BOT_TOKEN envar must be set");
+}
+
+startWsClient({ botToken: discordBotToken });
 
 app.post(
   "/rp-response",
@@ -52,5 +47,5 @@ app.post(
 );
 
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+  console.info(`Server running at http://localhost:${port}`);
 });

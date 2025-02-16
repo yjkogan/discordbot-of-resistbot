@@ -13,7 +13,7 @@ export function getRPEnvars() {
     protocol,
     hostname,
     basepath,
-  }
+  };
 }
 
 export function getDiscordEnvars() {
@@ -22,5 +22,5 @@ export function getDiscordEnvars() {
   return {
     discordAppId,
     discordBotToken,
-  }
+  };
 }
