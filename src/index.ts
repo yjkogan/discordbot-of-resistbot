@@ -1,5 +1,8 @@
 import express from "express";
-import logger from "morgan";
+
+// Do this first since it wires up all the telemetry
+import { getInstance } from "./logger";
+const logger = getInstance();
 
 import { startWsClient } from "./wsClient";
 import { handleRapidProResponse } from "./handlers/rapidPro";
@@ -8,7 +11,6 @@ import { getDiscordEnvars } from "./env";
 var app = express();
 const port = process.env.BACKEND_PORT || 5555;
 
-app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -47,5 +49,5 @@ app.post(
 );
 
 app.listen(port, () => {
-  console.info(`Server running at http://localhost:${port}`);
+  logger.info(`Server running at http://localhost:${port}`);
 });
