@@ -1,16 +1,7 @@
-import { response } from "express";
 import path from "path";
 import urlPackage from "url";
+import { getRPEnvars, getDiscordEnvars } from './env';
 
-const RP_SCHEME = process.env.RP_SCHEME || "https";
-const RP_NETLOC = process.env.RP_NETLOC || "";
-const RP_BASEPATH = process.env.RP_BASEPATH || "";
-const DISCORD_APP_ID = process.env.DISCORD_APP_ID || "";
-const DISCORD_BOT_TOKEN = process.env.DISCORD_BOT_TOKEN || "";
-
-console.log(
-  `Config is\n RP_SCHEME: ${RP_SCHEME}\n RP_NETLOC: ${RP_NETLOC}\n RP_BASEPATH: ${RP_BASEPATH}\n DISCORD_APP_ID: ${DISCORD_APP_ID}\n DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN}`,
-);
 
 type RapidProParams = {
   from: string;
@@ -32,9 +23,10 @@ export async function handleIncomingDM(requestJson: DiscordMessageJson) {
   const channelId = requestJson.channelId; // This is the DM with the User
   const isDM = !requestJson.guildId; // This is None if it's a DM
   const authorId = requestJson.author?.id;
+  const { discordAppId } = getDiscordEnvars();
 
   // Ignore messages from us, or if it's not a DM
-  if (authorId === DISCORD_APP_ID || !isDM) {
+  if (authorId === discordAppId || !isDM) {
     console.log("Ignoring message from bot or not a DM");
     return;
   }
@@ -58,7 +50,7 @@ export async function handleIncomingDM(requestJson: DiscordMessageJson) {
   const url = getUrl("/receive", queryParams);
   try {
     const rapidProResponse = await fetch(url, { method: "POST" });
-    const rapidProResponseJson = await rapidProResponse.json();
+    const rapidProResponseJson = await extractJson(rapidProResponse)
     console.log(
       `Response from ${url}: (${rapidProResponse.statusText})`,
       rapidProResponseJson,
@@ -126,12 +118,13 @@ export async function handleRapidProResponse(requestJson: RapidProJson) {
   };
 
   try {
+    const { discordBotToken } = getDiscordEnvars();
     const url = `https://discord.com/api/channels/${channelId}/messages`;
     const discordResponse = await fetch(url, {
       method: "POST",
       body: JSON.stringify(messageJson),
       headers: new Headers({
-        Authorization: `Bot ${DISCORD_BOT_TOKEN}`,
+        Authorization: `Bot ${discordBotToken}`,
         "Content-Type": "application/json",
       }),
     });
@@ -198,12 +191,24 @@ function createButtonComponent(buttonText: string) {
   return { type: 2, style: 1, label: buttonText, custom_id: buttonText };
 }
 
-function getUrl(pathname: string, queryParams?: { [key: string]: any }) {
+
+
+export function getUrl(pathname: string, queryParams?: { [key: string]: any }) {
+  const { protocol, hostname, basepath } = getRPEnvars()
   const urlObject = {
-    protocol: RP_SCHEME,
-    hostname: RP_NETLOC,
-    pathname: path.join(RP_BASEPATH, pathname),
+    protocol,
+    hostname,
+    pathname: path.join(basepath, pathname),
     query: queryParams,
   };
   return urlPackage.format(urlObject);
+}
+
+async function extractJson(response: Response) {
+  const contentType = response.headers.get("content-type");
+  if (!contentType || !contentType.includes("application/json")) {
+    const responseBody = await response.text();
+    throw new TypeError(responseBody);
+  }
+  return await response.json();
 }

@@ -10,7 +10,8 @@
     "docker-build": "docker build . -t resistbot-node-backend",
     "//docker-run": "Port 5555 is hard coded here and is the default. Reading it from .env seems like overkill.",
     "docker-run": "docker run -d --env-file ../.env -p 5555:5555 -t resistbot-node-backend | xargs docker logs -f",
-    "docker-stop-all": "docker ps --format json | jq '.ID' | xargs docker stop"
+    "docker-stop-all": "docker ps --format json | jq '.ID' | xargs docker stop",
+    "test": "vitest --config ./vitest/vi.config.ts"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
@@ -26,6 +27,8 @@
     "nodemon": "^3.0.3",
     "prettier": "3.2.5",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vitest": "^1.4.0",
+    "vitest-fetch-mock": "^0.2.2"
   }
 }
