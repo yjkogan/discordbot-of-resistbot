@@ -1,6 +1,8 @@
 import { RapidProJson, getUrl } from "../utils/rapidPro";
 import { createEmbed, createButtonComponent } from "../utils/discord";
 import { getDiscordEnvars } from "../env";
+import { getInstance } from "../logger";
+const logger = getInstance();
 
 export async function handleRapidProResponse(requestJson: RapidProJson) {
   // https://discord.com/developers/docs/resources/channel#create-message
@@ -9,7 +11,7 @@ export async function handleRapidProResponse(requestJson: RapidProJson) {
   const channelId = requestJson.to;
 
   if (!messageId || !channelId) {
-    console.error("missing messageId or channelId");
+    logger.error("missing messageId or channelId");
   }
 
   // TODO: Refactor this stuff into a discord module, or use discord.js
@@ -42,13 +44,13 @@ export async function handleRapidProResponse(requestJson: RapidProJson) {
       body: JSON.stringify({ id: messageId }),
     })
       .then(() =>
-        console.debug(`Successfully hit RapidPro /sent for message`, messageId),
+        logger.debug(`Successfully hit RapidPro /sent for message`, messageId),
       )
       .catch(() =>
-        console.error(`Error reaching RapidPro /sent for message`, messageId),
+        logger.error(`Error reaching RapidPro /sent for message`, messageId),
       );
     const discordResponseJson = await discordResponse.json();
-    console.debug(
+    logger.debug(
       `Response from ${url}: (${discordResponse.statusText})`,
       discordResponseJson,
     );
@@ -58,13 +60,13 @@ export async function handleRapidProResponse(requestJson: RapidProJson) {
         body: JSON.stringify({ id: messageId }),
       })
         .then(() =>
-          console.debug(
+          logger.debug(
             `Successfully hit RapidPro /delivered for message`,
             messageId,
           ),
         )
         .catch(() =>
-          console.error(
+          logger.error(
             `Error reaching RapidPro /delivered for message`,
             messageId,
           ),
@@ -75,19 +77,19 @@ export async function handleRapidProResponse(requestJson: RapidProJson) {
         body: JSON.stringify({ id: messageId }),
       })
         .then(() =>
-          console.debug(
+          logger.debug(
             `Successfully hit RapidPro /failed for message`,
             messageId,
           ),
         )
         .catch(() =>
-          console.error(
+          logger.error(
             `Error reaching RapidPro /failed for message`,
             messageId,
           ),
         );
     }
   } catch (e) {
-    console.error("Error creating message in Discord", e);
+    logger.error("Error creating message in Discord", e);
   }
 }

@@ -24,6 +24,11 @@
     "**/*": "prettier --write --ignore-unknown"
   },
   "dependencies": {
+    "@opentelemetry/auto-instrumentations-node": "^0.56.0",
+    "@opentelemetry/exporter-logs-otlp-http": "^0.57.2",
+    "@opentelemetry/instrumentation-bunyan": "^0.45.0",
+    "@opentelemetry/sdk-node": "^0.57.2",
+    "bunyan": "^1.8.15",
     "discord.js": "^14.18.0",
     "express": "^4.21.2",
     "morgan": "^1.10.0",

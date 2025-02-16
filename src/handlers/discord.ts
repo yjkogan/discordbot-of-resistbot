@@ -7,6 +7,8 @@ import {
   InteractionType,
 } from "discord.js";
 import { getUrl } from "../utils/rapidPro";
+import { getInstance } from "../logger";
+const logger = getInstance();
 import { getDiscordEnvars } from "../env";
 
 type RapidProParams = {
@@ -25,13 +27,13 @@ export async function handleIncomingDM(
 
   // Ignore messages from us, or if it's not a DM
   if (authorId === discordAppId || !isDM) {
-    console.debug("Ignoring message from bot or not a DM");
+    logger.debug("Ignoring message from bot or not a DM");
     return;
   }
 
   if (!channelId) {
     // or if it's not a DM
-    console.error("Got a message missing channel_id");
+    logger.error("Got a message missing channel_id");
     return;
   }
   const messageContent = message.content;
@@ -52,12 +54,12 @@ export async function handleIncomingDM(
   try {
     const rapidProResponse = await fetch(url, { method: "POST" });
     const rapidProResponseJson = await extractJson(rapidProResponse);
-    console.debug(
+    logger.debug(
       `Response from ${url}: (${rapidProResponse.statusText})`,
       rapidProResponseJson,
     );
   } catch (e) {
-    console.error(`Error reaching ${url}`, e);
+    logger.error(`Error reaching ${url}`, e);
   }
 }
 
@@ -66,7 +68,7 @@ export async function handleQuickResponse(interaction: Interaction<CacheType>) {
   const channelId = interaction.channelId;
   const interactionType = interaction.type;
   if (interactionType !== InteractionType.MessageComponent) {
-    console.warn(
+    logger.warn(
       `Unexpectedly received non-MESSAGE_COMPONENT interactionType: ${interactionType}`,
     );
     return;
@@ -80,12 +82,12 @@ export async function handleQuickResponse(interaction: Interaction<CacheType>) {
   try {
     const rapidProResponse = await fetch(url, { method: "POST" });
     const rapidProResponseJson = await extractJson(rapidProResponse);
-    console.debug(
+    logger.debug(
       `Response from ${url}: (${rapidProResponse.statusText})`,
       rapidProResponseJson,
     );
   } catch (e) {
-    console.error(`Error reaching ${url}`, e);
+    logger.error(`Error reaching ${url}`, e);
   }
   // TODO: We could store the interaction id here so that when rapidpro
   // sends us back a message we can have it as an interaction response

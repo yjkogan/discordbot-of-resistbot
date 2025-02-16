@@ -8,6 +8,8 @@ import {
   MessageFlags,
 } from "discord.js";
 
+import { getInstance } from "./logger";
+const logger = getInstance();
 import { handleIncomingDM, handleQuickResponse } from "./handlers/discord";
 
 const client = new Client({
@@ -42,7 +44,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 });
 
 client.on("ready", async () => {
-  console.info("Discord Gateway Ready");
+  logger.info("Discord Gateway Ready");
 });
 
 interface StartWSClientArgs {
@@ -53,10 +55,10 @@ export function startWsClient({ botToken }: StartWSClientArgs) {
   client
     .login(botToken)
     .then(() => {
-      console.info("Discord Gateway Logged in");
+      logger.info("Discord Gateway Logged in");
     })
     .catch((e) => {
-      console.error(e);
+      logger.error(e);
       process.exit(1);
     });
 }
