@@ -6,6 +6,7 @@ const logger = getInstance();
 
 import { startWsClient } from "./wsClient";
 import { handleRapidProResponse } from "./handlers/rapidPro";
+import fakeRapidProRoutes from "./fakeRapidPro";
 import { getDiscordEnvars } from "./env";
 
 var app = express();
@@ -47,6 +48,8 @@ app.post(
     res.sendStatus(202);
   },
 );
+
+app.use("/rp", fakeRapidProRoutes);
 
 app.listen(port, () => {
   logger.info(`Server running at http://localhost:${port}`);

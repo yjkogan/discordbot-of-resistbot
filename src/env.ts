@@ -9,10 +9,12 @@ export function getRPEnvars() {
   const protocol = process.env.RP_SCHEME || "https";
   const hostname = process.env.RP_NETLOC || "";
   const basepath = process.env.RP_BASEPATH || "";
+  const port = process.env.RP_PORT || 5555; // Just for the fake RP
   return {
     protocol,
     hostname,
     basepath,
+    port,
   };
 }
 

@@ -11,12 +11,13 @@ export type RapidProJson = {
 };
 
 export function getUrl(pathname: string, queryParams?: { [key: string]: any }) {
-  const { protocol, hostname, basepath } = getRPEnvars();
+  const { protocol, hostname, basepath, port } = getRPEnvars();
   const urlObject = {
     protocol,
     hostname,
     pathname: path.join(basepath, pathname),
     query: queryParams,
+    port,
   };
   return urlPackage.format(urlObject);
 }
