@@ -44,7 +44,7 @@ app.post(
   "/rp-response",
   function (req: express.Request, res: express.Response) {
     handleRapidProResponse(req.body);
-    res.send(202);
+    res.sendStatus(202);
   },
 );
 

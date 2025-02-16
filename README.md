@@ -1,6 +1,7 @@
 ## Overview
 
-This repo contains a flask about for forwarding messages we get via the websocket handler to rapid pro, and vice versa
+This repo contains a NodeJS about for receiving DMs on Discord via websocket, passing them to RapidPro,
+and then acting as a middle-person, forwarding messages back and forth.
 
 ## Getting started
 
@@ -11,6 +12,7 @@ This repo contains a flask about for forwarding messages we get via the websocke
    3. Check the "bot" scope
    4. Copy the generated URL at the bottom and paste it into a new tab
    5. Add the bot to the relevant server
+3. Get a [honeycomb API key](https://docs.honeycomb.io/send-data/javascript-nodejs/opentelemetry-sdk/)
 
 If you are also in that server, you should be able to DM the bot!
 
@@ -18,12 +20,16 @@ If you are also in that server, you should be able to DM the bot!
 
 1. `cp .env.example .env`
 2. Fill in the `.env` file with:
-   1. `DISCORD_TOKEN` (your Discord application's bot's token)
-   2. `DISCORD_APP_ID` (you Discord application's ID)
-   3. `RP_NETLOCK` (the 'netloc' of RapiPro e.g. rapidpro.com)
-   4. `RP_BASEPATH`: The base path for the RapidPro channel, e.g. /c/ds/bac782c2-1234-5678-9012-97887744f573/
+   1. `DISCORD_TOKEN`: your Discord application's bot's token
+   2. `DISCORD_APP_ID`: you Discord application's ID
+   3. `RP_NETLOCK`: the 'netloc' of RapiPro e.g. rapidpro.com
+   4. `RP_BASEPATH`: the base path for the RapidPro channel, e.g. /c/ds/bac782c2-1234-5678-9012-97887744f573/
    5. `RP_SCHEME`: https | http
-3. `docker compose up`
+   6. `OTEL_SERVICE_NAME`: the name of the service e.g. "resistbot-discordbot-localdev"
+   7. `OTEL_EXPORTER_OTLP_PROTOCOL`: "http/protobuf"
+   8. `OTEL_EXPORTER_OTLP_ENDPOINT`: "https://api.honeycomb.io:443"
+   9. `OTEL_EXPORTER_OTLP_HEADERS`: the honeycomb auth header along with your api key "x-honeycomb-team=API_KEY"
+3. `docker compose up --build`
 
 ## Testing
 
@@ -63,3 +69,11 @@ to the flask application. This cannot scale horizontally. Discord supports a for
 allowing "sharding" across multiple servers but DMs are all on the same "shard".
 We could get around this by asking user to initiate a conversation via an application command / slash command,
 which can be used in DMs (or elsewhere) without other users seeing it, but that's a slightly different UX than elsewhere.
+
+## Handlers
+
+The Discord handlers facilitate receiving messages and interactions from Discord and forwarding them to RapidPro.
+
+- Messages are exactly that: any message the user sends the bot via DM.
+- [Interactions](https://discord.com/developers/docs/interactions/overview) are a special Discord thing that
+  in our case just means when users click one of the buttons on Discord.

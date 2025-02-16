@@ -1,3 +1,7 @@
+// Adapted from the Honeycomb docs
+// https://docs.honeycomb.io/send-data/javascript-nodejs/opentelemetry-sdk/
+// https://docs.honeycomb.io/send-data/logs/opentelemetry/sdk/javascript/
+
 import { NodeSDK, logs } from "@opentelemetry/sdk-node";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-http";
